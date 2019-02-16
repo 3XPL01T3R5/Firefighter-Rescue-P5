@@ -1,13 +1,64 @@
-var curves = [];
+var curves = [], id = 0;
 
-class Street {
-	blocks = [];
-		
+class Block {
+	constructor(x, y, orientation, type) {
+		this.x = x;
+		this.y = y;
+		this.orientation = orientation;
+		this.type = type;
+		this.id = id++;
+	}
+}
+
+class House {
+	constructor(block, side) {
+		this.block = block;
+		this.side = side;
+	}
+}
+
+class FirefighterTruck {
+	constructor(block, side) {
+		this.men = 10;
+		this.available = true;
+		this.block = block;
+		this.side = side;
+	}
+}
+
+class FirefighterCorporation extends House {
+	constructor(block, side) {
+		super(block, side);
+		this.trucks = [];
+		this.emergenceList = [];
+	}
 }
 
 class Graph {
+	constructor() {
+		this.adjList = [];
+	}
 	
+	addEdge(u, v, dir) {
+		v.x = dir === u.x + ('right' ? blockSize : -blockSize);
+		v.y = dir === u.y + ('up' ? -blockSize : blockSize);
+		
+		try {
+			this.adjList[u.id] += [[v, dir]];
+		} catch (e) {
+			this.adjList[u.id] = [[v, dir]];
+		}
+		
+		let opposite = {'up': 'down', 'down': 'up', 'right': 'left', 'left': 'right'};
+		try {
+			this.adjList[v.id] += [[u, opposite[dir]]];
+		} catch (e) {
+			this.adjList[v.id] = [[u, opposite[dir]]];
+		}
+	}
 }
+
+/********************************************************************************************/
 
 function setup() {
 	createCanvas(1024, 768);
@@ -38,10 +89,6 @@ function drawStreetCorner(x, y, quad) {
 	arc(20, 20, 80, 80, curve.start, curve.end);
 	pop();
 }
-
-
-
-
 
 function draw() {
 	background(200);
