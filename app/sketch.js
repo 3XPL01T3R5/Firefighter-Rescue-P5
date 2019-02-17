@@ -1,6 +1,15 @@
-var curves = [], id = 0;
+let curves = [], id = 0, blockSize = 40;
+let dirToOrientation = {
+							'up': Block.ORIENTATION_VERTICAL,
+							'down': Block.ORIENTATION_VERTICAL,
+							'right': Block.ORIENTATION_HORIZONTAL,
+							'left': Block.ORIENTATION_HORIZONTAL
+						};
+
 
 class Block {
+	static ORIENTATION_HORIZONTAL = 0;
+	static ORIENTATION_VERTICAL = 1;
 	constructor(x, y, orientation, type) {
 		this.x = x;
 		this.y = y;
@@ -55,6 +64,28 @@ class Graph {
 		} catch (e) {
 			this.adjList[v.id] = [[u, opposite[dir]]];
 		}
+	}
+}
+
+class City {
+	constructor(dir) {
+        this.dir = dir;
+        this.graph = new Graph();
+        this.houses = [];
+        this.corporations = [];
+        this.lastBlock = null;
+    }
+
+    setInitialBlock(x, y, orientation, type) {
+		this.lastBlock = new Block(x, y, orientation, type);
+	}
+
+	buildBlock(dir, type) {
+		//  constructor(x, y, orientation, type)
+		let block = new Block(this.lastBlock.x + dir === 'right' ? 1 : dir === 'left' ? -1 : 0,
+			this.lastBlock.y + dir === 'down' ? 1 : dir === 'up' ? -1 : 0, dirToOrientation[dir], type);
+		this.graph.addEdge(this.lastBlock, block, dir);
+		this.lastBlock = block;
 	}
 }
 
