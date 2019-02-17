@@ -92,7 +92,7 @@ class City {
 /********************************************************************************************/
 
 function setup() {
-	createCanvas(1024, 768);
+	createCanvas(1200, 800);
 	curves = [{start: PI + HALF_PI, end: 0}, {start: 0, end: HALF_PI}, {start: HALF_PI, end: PI}, {start: PI, end: PI + HALF_PI}];
 }
 
