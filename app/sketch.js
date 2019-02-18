@@ -106,6 +106,28 @@ class House {
         this.side = side;
         this.isBurning = false;
     }
+
+    draw() {
+        push();
+        if (this.side === Block.SIDE_RIGHT) {
+            translate(this.block.x * blockSize + blockSize, this.block.y * blockSize);
+        } else if (this.side === Block.SIDE_LEFT) {
+            translate(this.block.x * blockSize - blockSize, this.block.y * blockSize);
+        } else if (this.side === Block.SIDE_BOTTOM) {
+            translate(this.block.x * blockSize, this.block.y * blockSize + blockSize);
+        } else {
+            translate(this.block.x * blockSize, this.block.y * blockSize - blockSize);
+        }
+        if (this.side === Block.SIDE_RIGHT) {
+            rotate(HALF_PI);
+        } else if (this.side === Block.SIDE_LEFT) {
+            rotate(-HALF_PI);
+        } else if (this.side === Block.SIDE_BOTTOM) {
+            rotate(PI);
+        }
+        image(houseImg, -halfBlockSize, -halfBlockSize, blockSize, blockSize);
+        pop();
+    }
 }
 
 class FirefighterTruck {
@@ -375,14 +397,21 @@ class City {
         this.graph.vertices.forEach(b => {
             b.draw(this.graph);
         });
+
+        this.houses.forEach(h => {
+            h.draw();
+        });
     }
 }
 
 /********************************************************************************************/
 var city = undefined;
+var houseImg, corporationImg;
 
 function setup() {
-    createCanvas(1160, 810);
+    createCanvas(1200, 810);
+    houseImg = loadImage('../assets/house.png');
+    corporationImg = loadImage('../assets/corporation.png');
     curves = [
         {start: PI + HALF_PI, end: 0},
         {start: 0, end: HALF_PI},
@@ -398,7 +427,7 @@ function setup() {
 function draw() {
     background('rgba(150,214,150, 1)');
     push();
-    translate(0, 23);
+    translate(20, 23);
     city.draw();
     pop();
 }
