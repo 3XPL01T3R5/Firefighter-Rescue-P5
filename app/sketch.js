@@ -135,11 +135,48 @@ class House {
 }
 
 class FirefighterTruck {
-    constructor(block, side) {
+    constructor(block, side, x, y, path) {
         this.men = 10;
         this.available = true;
         this.block = block;
         this.side = side;
+        this.x = x;
+        this.y = y;
+        this.path = path;
+        this.currentDir = undefined;
+    }
+
+    draw() {
+        push();
+            translate(this.x, this.y);
+            if(this.currentDir === Block.SIDE_RIGHT) {
+                rotate(HALF_PI);
+            } else if(this.currentDir === Block.SIDE_BOTTOM) {
+                rotate(PI);
+            } else if(this.currentDir === Block.SIDE_LEFT) {
+                rotate(PI + HALF_PI);
+            }
+            // image(truckImg, this.)
+        pop();
+    }
+
+    updatePosition() {
+        let block = path.shift();
+        if (!block)
+            return;
+        this.x = block.x;
+        this.y = block.y;
+        let deltax = path[0].x - block.x;
+        let deltay = path[0].y - block.y;
+        if (deltax < 0) {
+            this.currentDir = Block.SIDE_LEFT;
+        } else if (deltax > 0) {
+            this.currentDir = Block.SIDE_RIGHT;
+        } else if (deltay > 0) {
+            this.currentDir = Block.SIDE_BOTTOM;
+        } else if (deltaY < 0) {
+            this.currentDir = Block.SIDE_TOP;
+        }
     }
 }
 
@@ -418,12 +455,13 @@ class City {
 
 /********************************************************************************************/
 var city = undefined;
-var houseImg, corporationImg;
+var houseImg, corporationImg, truckImg;
 
 function setup() {
     createCanvas(1200, 810);
     houseImg = loadImage('../assets/house.png');
     corporationImg = loadImage('../assets/corporation.png');
+    truckImg = loadImage('../assets/truck.png');
     curves = [
         {start: PI + HALF_PI, end: 0},
         {start: 0, end: HALF_PI},
