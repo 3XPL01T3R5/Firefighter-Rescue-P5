@@ -24,9 +24,12 @@ class Block {
         var y = this.y * blockSize;
         push();
         translate(x, y);
-        if (this.orientation == Block.ORIENTATION_HORIZONTAL) {
+        if (this.orientation === Block.ORIENTATION_HORIZONTAL) {
             rotate(HALF_PI);
         }
+        noStroke();
+        fill(200);
+        rect(-halfBlockSize, -halfBlockSize, blockSize, blockSize);
         stroke(0);
         strokeWeight(4);
         line(-halfBlockSize, -halfBlockSize, -halfBlockSize, halfBlockSize);
@@ -42,6 +45,9 @@ class Block {
         push();
         translate(x, y);
         var hasNeigh = graph.getIntersectionDirs(this.id);
+        noStroke();
+        fill(200);
+        rect(-halfBlockSize, -halfBlockSize, blockSize, blockSize);
         strokeWeight(4);
         if (!hasNeigh[0]) {
             stroke(0);
@@ -79,7 +85,7 @@ class Block {
     }
 
     draw(graph) {
-        if (this.type == Block.TYPE_STRAIGHT) {
+        if (this.type === Block.TYPE_STRAIGHT) {
             this.drawStreetBlock();
         } else {
             this.drawStreetCorner(graph);
@@ -131,7 +137,7 @@ class Graph {
     }
 
     getVertexById(id) {
-        for (var i = 0; i < this.vertices.length; i++) {
+        for (let i = 0; i < this.vertices.length; i++) {
             if (this.vertices[i].id === id) {
                 return this.vertices[i];
             }
@@ -162,10 +168,10 @@ class Graph {
     getIntersectionDirs(id) {
         var neigh = this.adjList[id];
         var arr = [0, 0, 0, 0];
-        arr[0] = !!neigh.find(n => n[1] == 'up');
-        arr[1] = !!neigh.find(n => n[1] == 'right');
-        arr[2] = !!neigh.find(n => n[1] == 'down');
-        arr[3] = !!neigh.find(n => n[1] == 'left');
+        arr[0] = !!neigh.find(n => n[1] === 'up');
+        arr[1] = !!neigh.find(n => n[1] === 'right');
+        arr[2] = !!neigh.find(n => n[1] === 'down');
+        arr[3] = !!neigh.find(n => n[1] === 'left');
         return arr;
     }
 }
@@ -376,22 +382,21 @@ class City {
 var city = undefined;
 
 function setup() {
-	createCanvas(1160, 810);
-	curves = [
-            {start: PI + HALF_PI, end: 0},
-            {start: 0, end: HALF_PI},
-            {start: HALF_PI, end: PI},
-            {start: PI, end: PI + HALF_PI}
-            ];
-
-  let city = new City();
-  city.buildCity();
-  city.buildHouses();
-  city.buildCorporations();
+    createCanvas(1160, 810);
+    curves = [
+        {start: PI + HALF_PI, end: 0},
+        {start: 0, end: HALF_PI},
+        {start: HALF_PI, end: PI},
+        {start: PI, end: PI + HALF_PI}
+    ];
+    city = new City();
+    city.buildCity();
+    city.buildHouses();
+    city.buildCorporations();
 }
 
 function draw() {
-    background(200);
+    background('rgba(150,214,150, 1)');
     push();
     translate(0, 23);
     city.draw();
