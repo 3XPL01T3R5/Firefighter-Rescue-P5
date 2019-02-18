@@ -107,7 +107,7 @@ class House {
         this.isBurning = false;
     }
 
-    draw() {
+    drawWithImage(img) {
         push();
         if (this.side === Block.SIDE_RIGHT) {
             translate(this.block.x * blockSize + blockSize, this.block.y * blockSize);
@@ -125,8 +125,12 @@ class House {
         } else if (this.side === Block.SIDE_BOTTOM) {
             rotate(PI);
         }
-        image(houseImg, -halfBlockSize, -halfBlockSize, blockSize, blockSize);
+        image(img, -halfBlockSize, -halfBlockSize, blockSize, blockSize);
         pop();
+    }
+
+    draw() {
+        this.drawWithImage(houseImg);
     }
 }
 
@@ -144,6 +148,10 @@ class FirefighterCorporation extends House {
         super(block, side);
         this.trucks = [];
         this.emergenceList = [];
+    }
+
+    draw() {
+        this.drawWithImage(corporationImg);
     }
 }
 
@@ -390,7 +398,7 @@ class City {
     }
 
     buildCorporations() {
-        this.corporations.push(this.graph.getVertexById(166), Block.SIDE_LEFT);
+        this.corporations.push(new FirefighterCorporation(this.graph.getVertexById(166), Block.SIDE_LEFT));
     }
 
     draw() {
@@ -400,6 +408,10 @@ class City {
 
         this.houses.forEach(h => {
             h.draw();
+        });
+
+        this.corporations.forEach(c => {
+            c.draw();
         });
     }
 }
