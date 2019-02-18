@@ -1,4 +1,4 @@
-let curves = [], id = 0, blockSize = 40;
+let curves = [], id = 0, blockSize = 40, halfBlockSize = blockSize / 2, eighthBlockSize = blockSize / 8;
 let initialX = 1, initialY = 0;
 
 class Block {
@@ -17,6 +17,73 @@ class Block {
         this.orientation = orientation;
         this.type = type;
         this.id = id++;
+    }
+
+    drawStreetBlock() {
+        var x = this.x * blockSize;
+        var y = this.y * blockSize;
+        push();
+        translate(x, y);
+        if (this.orientation == Block.ORIENTATION_HORIZONTAL) {
+            rotate(HALF_PI);
+        }
+        stroke(0);
+        strokeWeight(4);
+        line(-halfBlockSize, -halfBlockSize, -halfBlockSize, halfBlockSize);
+        line(halfBlockSize, -halfBlockSize, halfBlockSize, halfBlockSize);
+        stroke(255);
+        line(0, -eighthBlockSize, 0, eighthBlockSize);
+        pop();
+    }
+
+    drawStreetCorner(graph) {
+        var x = this.x * blockSize;
+        var y = this.y * blockSize;
+        push();
+        translate(x, y);
+        var hasNeigh = graph.getIntersectionDirs(this.id);
+        strokeWeight(4);
+        if (!hasNeigh[0]) {
+            stroke(0);
+            line(-halfBlockSize, -halfBlockSize, halfBlockSize, -halfBlockSize);
+        }
+        else {
+            stroke(255);
+            line(0, 0, 0, -eighthBlockSize);
+        }
+        if (!hasNeigh[1]) {
+            stroke(0);
+            line(halfBlockSize, -halfBlockSize, halfBlockSize, halfBlockSize);
+        }
+        else {
+            stroke(255);
+            line(0, 0, eighthBlockSize, 0);
+        }
+        if (!hasNeigh[2]) {
+            stroke(0);
+            line(-halfBlockSize, halfBlockSize, halfBlockSize, halfBlockSize);
+        }
+        else {
+            stroke(255);
+            line(0, 0, 0, eighthBlockSize);
+        }
+        if (!hasNeigh[3]) {
+            stroke(0);
+            line(-halfBlockSize, -halfBlockSize, -halfBlockSize, halfBlockSize);
+        }
+        else {
+            stroke(255);
+            line(-eighthBlockSize, 0, 0, 0);
+        }
+        pop();
+    }
+
+    draw(graph) {
+        if (this.type == Block.TYPE_STRAIGHT) {
+            this.drawStreetBlock();
+        } else {
+            this.drawStreetCorner(graph);
+        }
     }
 }
 
@@ -90,6 +157,16 @@ class Graph {
             this.addVertex(v);
             this.adjList[v.id].push([u.id, opposite[dir]]);
         }
+    }
+
+    getIntersectionDirs(id) {
+        var neigh = this.adjList[id];
+        var arr = [0, 0, 0, 0];
+        arr[0] = !!neigh.find(n => n[1] == 'up');
+        arr[1] = !!neigh.find(n => n[1] == 'right');
+        arr[2] = !!neigh.find(n => n[1] == 'down');
+        arr[3] = !!neigh.find(n => n[1] == 'left');
+        return arr;
     }
 }
 
@@ -287,11 +364,19 @@ class City {
     buildCorporations() {
         this.corporations.push(this.graph.getVertexById(166), Block.SIDE_LEFT);
     }
+
+    draw() {
+        this.graph.vertices.forEach(b => {
+            b.draw(this.graph);
+        });
+    }
 }
 
 /********************************************************************************************/
+var city = undefined;
+
 function setup() {
-	createCanvas(1200, 800);
+	createCanvas(1160, 810);
 	curves = [
             {start: PI + HALF_PI, end: 0},
             {start: 0, end: HALF_PI},
@@ -305,46 +390,10 @@ function setup() {
   city.buildCorporations();
 }
 
-function drawStreetBlock(x, y, pos) {
-    push();
-    translate(x, y);
-    if (pos) {
-        rotate(HALF_PI);
-    }
-    stroke(0);
-    strokeWeight(4);
-    line(-20, -20, -20, 20);
-    line(20, -20, 20, 20);
-    stroke(255);
-    line(0, -5, 0, 5);
-    pop();
-}
-
-function drawStreetCorner(x, y, quad) {
-    push();
-    translate(x, y);
-    noFill();
-    strokeWeight(4);
-    var curve = curves[quad];
-    arc(20, 20, 80, 80, curve.start, curve.end);
-    pop();
-}
-
 function draw() {
     background(200);
-    var x = width / 2, y = height / 2;
-    for (var i = 0; i < 10; i++) {
-        drawStreetBlock(x, y, false);
-        y += 40;
-    }
-    drawStreetBlock(width / 2 + 40, height / 2 - 40, true);
-    drawStreetCorner(width / 2, height / 2 - 40, 3);
-    var x = width / 2 + 80;
-    var y = height / 2 - 40;
-    for (var i = 0; i < 5; i++) {
-        drawStreetBlock(x, y, true);
-        x += 40;
-    }
-    x -= 40;
-    drawStreetCorner(x, height / 2 - 40, 0);
+    push();
+    translate(0, 23);
+    city.draw();
+    pop();
 }
