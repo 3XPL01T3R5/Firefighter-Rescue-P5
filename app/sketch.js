@@ -1,4 +1,4 @@
-let curves = [], id = 0, blockSize = 40, halfBlockSize = blockSize / 2, eighthBlockSize = blockSize / 8;
+let curves = [], id = 0, blockSize = 40, halfBlockSize = blockSize / 2, quarterBlockSize = blockSize/4, eighthBlockSize = blockSize / 8;
 let initialX = 1, initialY = 0;
 
 class Block {
@@ -135,48 +135,51 @@ class House {
 }
 
 class FirefighterTruck {
-    constructor(block, side, x, y, path) {
+    constructor(block, path) {
         this.men = 10;
         this.available = true;
         this.block = block;
-        this.side = side;
-        this.x = x;
-        this.y = y;
+        this.x = block.x;
+        this.y = block.y;
         this.path = path;
         this.currentDir = undefined;
+        this.displacement = undefined;
     }
 
     draw() {
         push();
-            translate(this.x, this.y);
-            if(this.currentDir === Block.SIDE_RIGHT) {
-                rotate(HALF_PI);
-            } else if(this.currentDir === Block.SIDE_BOTTOM) {
-                rotate(PI);
-            } else if(this.currentDir === Block.SIDE_LEFT) {
-                rotate(PI + HALF_PI);
-            }
-            // image(truckImg, this.)
+        translate(this.x, this.y);
+        if(this.currentDir === Block.SIDE_RIGHT) {
+            rotate(HALF_PI);
+        } else if(this.currentDir === Block.SIDE_BOTTOM) {
+            rotate(PI);
+        } else if(this.currentDir === Block.SIDE_LEFT) {
+            rotate(PI + HALF_PI);
+        }
+        image(truckImg, this.x * blockSize - this.displacement, this.y * blockSize, quarterBlockSize, halfBlockSize);
         pop();
     }
 
     updatePosition() {
-        let block = path.shift();
+        let block = this.path.shift();
         if (!block)
+            return;
+        if (!this.path.length)
             return;
         this.x = block.x;
         this.y = block.y;
-        let deltax = path[0].x - block.x;
-        let deltay = path[0].y - block.y;
+        let deltax = this.path[0].x - block.x;
+        let deltay = this.path[0].y - block.y;
         if (deltax < 0) {
             this.currentDir = Block.SIDE_LEFT;
         } else if (deltax > 0) {
             this.currentDir = Block.SIDE_RIGHT;
         } else if (deltay > 0) {
             this.currentDir = Block.SIDE_BOTTOM;
-        } else if (deltaY < 0) {
+        } else if (deltay < 0) {
             this.currentDir = Block.SIDE_TOP;
         }
+        this.displacement = 8;
     }
 }
 
@@ -248,6 +251,7 @@ class City {
         this.graph = new Graph();
         this.houses = [];
         this.corporations = [];
+        this.truck = undefined;
         this.lastBlock = null;
     }
 
@@ -430,8 +434,8 @@ class City {
         this.houses.push(new House(this.graph.getVertexById(195), Block.SIDE_RIGHT));
         this.houses.push(new House(this.graph.getVertexById(201), Block.SIDE_LEFT));
         this.houses.push(new House(this.graph.getVertexById(205), Block.SIDE_TOP));
-
-        console.log(this.houses);
+        let path = [this.graph.getVertexById(166), this.graph.getVertexById(165), this.graph.getVertexById(164), this.graph.getVertexById(145), this.graph.getVertexById(159), this.graph.getVertexById(160), this.graph.getVertexById(161)];
+        this.truck = new FirefighterTruck(this.graph.getVertexById(166), path);
     }
 
     buildCorporations() {
@@ -450,6 +454,11 @@ class City {
         this.corporations.forEach(c => {
             c.draw();
         });
+
+        this.truck.draw();
+        this.truck.updatePosition();
+
+
     }
 }
 
@@ -459,9 +468,10 @@ var houseImg, corporationImg, truckImg;
 
 function setup() {
     createCanvas(1200, 810);
-    houseImg = loadImage('../assets/house.png');
-    corporationImg = loadImage('../assets/corporation.png');
-    truckImg = loadImage('../assets/truck.png');
+    frameRate(2);
+    houseImg = loadImage('assets/house.png');
+    corporationImg = loadImage('assets/corporation.png');
+    truckImg = loadImage('assets/truck.png');
     curves = [
         {start: PI + HALF_PI, end: 0},
         {start: 0, end: HALF_PI},
