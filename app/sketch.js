@@ -10,6 +10,10 @@ class Block {
     static SIDE_RIGHT = 1;
     static SIDE_BOTTOM = 2;
     static SIDE_TOP = 3;
+    static DIR_LEFT = 0;
+    static DIR_RIGHT = 1;
+    static DIR_DOWN = 2;
+    static DIR_UP = 3;
 
     constructor(x, y, orientation, type) {
         this.x = x;
@@ -136,7 +140,6 @@ class House {
 
 class FirefighterTruck {
     constructor(path, graph) {
-        this.men = 10;
         this.graph = graph;
         this.available = true;
         this.block = this.graph.getVertexById(path[0]);
@@ -148,14 +151,32 @@ class FirefighterTruck {
     }
 
     draw() {
+        let nextNextBlock = this.graph.getVertexById(this.path[1]);
+        let sharpCurve = false;
+        if (nextNextBlock) {
+            let deltax = nextNextBlock - this.x;
+            let deltay = nextNextBlock.y - this.y;
+            if (this.currentDir === Block.DIR_UP && deltax > 0 ||
+                this.currentDir === Block.DIR_DOWN && deltax < 0 ||
+                this.currentDir === Block.DIR_RIGHT && deltay > 0 ||
+                this.currentDir === Block.DIR_LEFT && deltay < 0) {
+                sharpCurve = true;
+            }
+        }
         push();
-        translate(this.x * blockSize - this.displacement + 15, this.y * blockSize - 5);
-        if(this.currentDir === Block.SIDE_RIGHT) {
+
+        if(this.currentDir === Block.DIR_RIGHT) {
+            translate(this.x * blockSize - quarterBlockSize, this.y * blockSize + eighthBlockSize);
+
             rotate(HALF_PI);
-        } else if(this.currentDir === Block.SIDE_BOTTOM) {
-            rotate(PI);
-        } else if(this.currentDir === Block.SIDE_LEFT) {
+        } else if(this.currentDir === Block.DIR_LEFT) {
+            translate(this.x * blockSize - quarterBlockSize, this.y * blockSize - eighthBlockSize);
             rotate(PI + HALF_PI);
+        } else if(this.currentDir === Block.DIR_DOWN) {
+            translate(this.x * blockSize - eighthBlockSize, this.y * blockSize + quarterBlockSize);
+            rotate(PI);
+        }  else {
+            translate(this.x * blockSize + eighthBlockSize, this.y * blockSize - quarterBlockSize);
         }
         image(truckImg, 0, 0, quarterBlockSize, halfBlockSize);
         pop();
@@ -173,13 +194,13 @@ class FirefighterTruck {
         let deltax = nextBlock.x - block.x;
         let deltay = nextBlock.y - block.y;
         if (deltax < 0) {
-            this.currentDir = Block.SIDE_LEFT;
+            this.currentDir = Block.DIR_LEFT;
         } else if (deltax > 0) {
-            this.currentDir = Block.SIDE_RIGHT;
+            this.currentDir = Block.DIR_RIGHT;
         } else if (deltay > 0) {
-            this.currentDir = Block.SIDE_BOTTOM;
+            this.currentDir = Block.DIR_DOWN;
         } else if (deltay < 0) {
-            this.currentDir = Block.SIDE_TOP;
+            this.currentDir = Block.DIR_UP;
         }
         this.displacement = 8;
     }
@@ -483,7 +504,7 @@ function setup() {
     city.buildCorporations();
 
     paths = findDistances(city.graph, city.houses, city.corporations[0].block.id);
-
+    console.log('path: ', paths[13]);
     city.truck = new FirefighterTruck(paths[13], city.graph);
 }
 
