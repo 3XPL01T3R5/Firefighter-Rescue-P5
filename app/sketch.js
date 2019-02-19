@@ -135,12 +135,13 @@ class House {
 }
 
 class FirefighterTruck {
-    constructor(block, path) {
+    constructor(path, graph) {
         this.men = 10;
+        this.graph = graph;
         this.available = true;
-        this.block = block;
-        this.x = block.x;
-        this.y = block.y;
+        this.block = this.graph.getVertexById(path[0]);
+        this.x = this.block.x;
+        this.y = this.block.y;
         this.path = path;
         this.currentDir = undefined;
         this.displacement = undefined;
@@ -148,7 +149,7 @@ class FirefighterTruck {
 
     draw() {
         push();
-        translate(this.x, this.y);
+        translate(this.x * blockSize - this.displacement + 15, this.y * blockSize - 5);
         if(this.currentDir === Block.SIDE_RIGHT) {
             rotate(HALF_PI);
         } else if(this.currentDir === Block.SIDE_BOTTOM) {
@@ -156,20 +157,21 @@ class FirefighterTruck {
         } else if(this.currentDir === Block.SIDE_LEFT) {
             rotate(PI + HALF_PI);
         }
-        image(truckImg, this.x * blockSize - this.displacement, this.y * blockSize, quarterBlockSize, halfBlockSize);
+        image(truckImg, 0, 0, quarterBlockSize, halfBlockSize);
         pop();
     }
 
     updatePosition() {
-        let block = this.path.shift();
+        let block = this.graph.getVertexById(this.path.shift());
+        let nextBlock = this.graph.getVertexById(this.path[0]);
         if (!block)
-            return;
-        if (!this.path.length)
             return;
         this.x = block.x;
         this.y = block.y;
-        let deltax = this.path[0].x - block.x;
-        let deltay = this.path[0].y - block.y;
+        if (!this.path.length)
+            return;
+        let deltax = nextBlock.x - block.x;
+        let deltay = nextBlock.y - block.y;
         if (deltax < 0) {
             this.currentDir = Block.SIDE_LEFT;
         } else if (deltax > 0) {
@@ -434,8 +436,6 @@ class City {
         this.houses.push(new House(this.graph.getVertexById(195), Block.SIDE_RIGHT));
         this.houses.push(new House(this.graph.getVertexById(201), Block.SIDE_LEFT));
         this.houses.push(new House(this.graph.getVertexById(205), Block.SIDE_TOP));
-        let path = [this.graph.getVertexById(166), this.graph.getVertexById(165), this.graph.getVertexById(164), this.graph.getVertexById(145), this.graph.getVertexById(159), this.graph.getVertexById(160), this.graph.getVertexById(161)];
-        this.truck = new FirefighterTruck(this.graph.getVertexById(166), path);
     }
 
     buildCorporations() {
@@ -458,13 +458,12 @@ class City {
         this.truck.draw();
         this.truck.updatePosition();
 
-
     }
 }
 
 /********************************************************************************************/
 var city = undefined;
-var houseImg, corporationImg, truckImg;
+var houseImg, corporationImg, truckImg, paths;
 
 function setup() {
     createCanvas(1200, 810);
@@ -482,6 +481,10 @@ function setup() {
     city.buildCity();
     city.buildHouses();
     city.buildCorporations();
+
+    paths = findDistances(city.graph, city.houses, city.corporations[0].block.id);
+
+    city.truck = new FirefighterTruck(paths[13], city.graph);
 }
 
 function draw() {
