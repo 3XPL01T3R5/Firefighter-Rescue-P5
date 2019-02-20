@@ -36,12 +36,16 @@ function findPaths(graph, objectives, start) {
 }
 
 function fitness(house, distance) {
-    return house.residents / 5 + house.burningLevel / 10 + 10 / distance;
+    return (house.residents / 5) + (house.burningLevel / 5) + (5 / distance);
 }
 
 function sortByFitness(houses, distances) {
     houses = houses.sort((h1, h2) => {
-       return fitness(h2, distances[h2.block.id]) - fitness(h1, distances[h1.block.id]);
+       return fitness(h2, distances[h2.block.id].length) - fitness(h1, distances[h1.block.id].length);
+    });
+
+    houses.forEach(h => {
+        console.log(fitness(h, distances[h.block.id].length));
     });
 
     return houses;

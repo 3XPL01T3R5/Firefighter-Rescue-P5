@@ -2,6 +2,10 @@ var city = undefined;
 var houseImg, corporationImg, truckImg, houseFireImg1, houseFireImg2, houseFireImg3, sirenSound, callback, btnStart;
 
 function start() {
+    city.houses.forEach(h => {
+        h.residents = floor(random(1, 10));
+    });
+
     // Setting houses on fire
     for (let i = 0; i < 3; i++) {
         let houseIndex = floor(random(0, city.houses.length));
