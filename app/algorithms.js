@@ -15,10 +15,9 @@ function findPaths(graph, objectives, start) {
             visited[n[0]] = true;
             neighbors = neighbors.concat(graph.adjList[n[0]]);
             parent = parent.concat(Array(graph.adjList[n[0]].length).fill(n[0]));
-            path[n[0]] = path[p].concat([p]);
+            path[n[0]] = path[p].concat([p, n[0]]);
         }
     }
-
     return path;
 }
 
