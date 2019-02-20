@@ -9,10 +9,10 @@ class FirefighterTruck {
         this.graph = graph;
         this.available = true;
         this.block = this.graph.getVertexById(path[0]);
-        this.x = this.block.x;
-        this.y = this.block.y;
+        this.x = this.block.x * blockSize;
+        this.y = this.block.y * blockSize;
         this.path = path;
-        this.currentDir = undefined;
+        this.currentDir = null;
         this.location = 0;
         this.state = FirefighterTruck.TRUCK_AT_GARAGE;
         this.target = null;
@@ -50,16 +50,16 @@ class FirefighterTruck {
         push();
 
         if(this.currentDir === Block.DIR_RIGHT) {
-            translate(this.x * blockSize + quarterBlockSize, this.y * blockSize + eighthBlockSize);
+            translate(this.x + quarterBlockSize, this.y + eighthBlockSize);
             rotate(HALF_PI);
         } else if(this.currentDir === Block.DIR_LEFT) {
-            translate(this.x * blockSize - quarterBlockSize, this.y * blockSize - eighthBlockSize);
+            translate(this.x - quarterBlockSize, this.y - eighthBlockSize);
             rotate(PI + HALF_PI);
         } else if(this.currentDir === Block.DIR_DOWN) {
-            translate(this.x * blockSize - eighthBlockSize, this.y * blockSize + quarterBlockSize);
+            translate(this.x - eighthBlockSize, this.y + quarterBlockSize);
             rotate(PI);
         }  else {
-            translate(this.x * blockSize + eighthBlockSize, this.y * blockSize - quarterBlockSize);
+            translate(this.x + eighthBlockSize, this.y - quarterBlockSize);
         }
         image(truckImg, 0, 0, quarterBlockSize, halfBlockSize);
         pop();
@@ -77,8 +77,8 @@ class FirefighterTruck {
         let nextBlock = this.graph.getVertexById(this.path[this.location + value]);
         if (!block)
             return;
-        this.x = block.x;
-        this.y = block.y;
+        //this.x = block.x;
+        //this.y = block.y;
         if (!nextBlock){
             if (this.state === FirefighterTruck.TRUCK_ON_THE_WAY) {
                 this.state = FirefighterTruck.TRUCK_ARRIVED;
@@ -102,8 +102,13 @@ class FirefighterTruck {
         } else if (deltay < 0) {
             this.currentDir = Block.DIR_UP;
         }
-
-        this.location += value
+        this.x += deltax * 4;
+        this.y += deltay * 4;
+        if (this.x > nextBlock.x * blockSize && this.currentDir === Block.DIR_RIGHT || this.x < nextBlock.x * blockSize && this.currentDir === Block.DIR_LEFT || this.y > nextBlock.y * blockSize && this.currentDir === Block.DIR_DOWN || this.y < nextBlock.y * blockSize && this.currentDir === Block.DIR_UP) {
+            this.x = nextBlock.x * blockSize;
+            this.y = nextBlock.y * blockSize;
+            this.location += value;
+        }
     }
 }
 

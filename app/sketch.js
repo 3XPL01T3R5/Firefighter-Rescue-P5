@@ -22,7 +22,7 @@ function preload() {
 
 function setup() {
     createCanvas(1200, 810);
-    frameRate(20);
+    frameRate(600);
     houseImg = loadImage('assets/house.png');
     houseFireImg1 = loadImage('assets/house_fire_1.png');
     houseFireImg2 = loadImage('assets/house_fire_2.png');

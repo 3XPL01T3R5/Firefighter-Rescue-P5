@@ -18,11 +18,17 @@ function findPaths(graph, objectives, start) {
             path[n[0]] = path[p].concat([p, n[0]]);
         }
     }
+    Object.keys(path).forEach(p => {
+        for (let i = path[p].length - 2; i >= 1; i-=2) {
+            path[p].splice(i, 1);
+        }
+    });
+    console.log(path);
     return path;
 }
 
 function fitness(house, distance) {
-    return (house.residents / 100) + (house.burningLevel / 10) + 1 / distance;
+    return (house.residents / 100) + (house.burningLevel / 10) + 10 / distance;
 }
 
 function sortByFitness(houses, distances) {
