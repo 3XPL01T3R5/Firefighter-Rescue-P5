@@ -2,6 +2,7 @@ class City {
     constructor() {
         this.graph = new Graph();
         this.houses = [];
+        this.housesOnFire = [];
         this.corporations = [];
         this.truck = undefined;
         this.lastBlock = null;
@@ -176,20 +177,32 @@ class City {
     }
 
     buildHouses() {
-        this.houses.push(new House(this.graph.getVertexById(13), Block.SIDE_LEFT));
-        this.houses.push(new House(this.graph.getVertexById(98), Block.SIDE_TOP));
-        this.houses.push(new House(this.graph.getVertexById(118), Block.SIDE_LEFT));
-        this.houses.push(new House(this.graph.getVertexById(131), Block.SIDE_RIGHT));
-        this.houses.push(new House(this.graph.getVertexById(143), Block.SIDE_TOP));
-        this.houses.push(new House(this.graph.getVertexById(161), Block.SIDE_RIGHT));
-        this.houses.push(new House(this.graph.getVertexById(173), Block.SIDE_BOTTOM));
-        this.houses.push(new House(this.graph.getVertexById(195), Block.SIDE_RIGHT));
-        this.houses.push(new House(this.graph.getVertexById(201), Block.SIDE_LEFT));
-        this.houses.push(new House(this.graph.getVertexById(205), Block.SIDE_TOP));
+        this.houses.push(new House(this.graph.getVertexById(13), Block.SIDE_LEFT, 10));
+        this.houses.push(new House(this.graph.getVertexById(98), Block.SIDE_TOP, 4));
+        this.houses.push(new House(this.graph.getVertexById(118), Block.SIDE_LEFT, 3));
+        this.houses.push(new House(this.graph.getVertexById(131), Block.SIDE_RIGHT, 8));
+        this.houses.push(new House(this.graph.getVertexById(143), Block.SIDE_TOP, 9));
+        this.houses.push(new House(this.graph.getVertexById(161), Block.SIDE_RIGHT, 1));
+        this.houses.push(new House(this.graph.getVertexById(173), Block.SIDE_BOTTOM, 4));
+        this.houses.push(new House(this.graph.getVertexById(195), Block.SIDE_RIGHT, 7));
+        this.houses.push(new House(this.graph.getVertexById(201), Block.SIDE_LEFT, 3));
+        this.houses.push(new House(this.graph.getVertexById(205), Block.SIDE_TOP, 2));
     }
 
     buildCorporations() {
         this.corporations.push(new FirefighterCorporation(this.graph.getVertexById(166), Block.SIDE_LEFT));
+    }
+
+    sendTrucks(house) {
+        city.truck = new FirefighterTruck(paths[house.block.id], city.graph);
+        this.truck.target = house;
+        this.truck.send();
+    }
+
+    callbackTruckGarage() {
+        if (this.housesOnFire.length === 0)
+            return;
+        this.sendTrucks(this.housesOnFire.shift());
     }
 
     draw() {
@@ -204,9 +217,5 @@ class City {
         this.corporations.forEach(c => {
             c.draw();
         });
-
-        this.truck.draw();
-        this.truck.updatePosition();
-
     }
 }

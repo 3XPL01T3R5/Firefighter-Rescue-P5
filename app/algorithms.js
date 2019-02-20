@@ -22,6 +22,21 @@ function findPaths(graph, objectives, start) {
 }
 
 function fitness(house, distance) {
+    return (house.residents / 100) + (house.burningLevel / 10) + 1 / distance;
+}
 
+function sortByFitness(houses, distances) {
+    houses = houses.sort((h1, h2) => {
+        let f1 = fitness(h1, distances[h1.block.id]);
+        let f2 = fitness(h2, distances[h2.block.id]);
+
+        if (f1 < f2)
+            return 1;
+        if (f1 > f2)
+            return -1;
+        return 0
+    });
+
+    return houses;
 }
 

@@ -7,6 +7,10 @@ class Block {
     static SIDE_RIGHT = 1;
     static SIDE_BOTTOM = 2;
     static SIDE_TOP = 3;
+    static DIR_LEFT = 0;
+    static DIR_RIGHT = 1;
+    static DIR_DOWN = 2;
+    static DIR_UP = 3;
 
     constructor(x, y, orientation, type) {
         this.x = x;

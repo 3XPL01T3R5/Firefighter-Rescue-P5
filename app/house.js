@@ -34,18 +34,13 @@ class House {
     }
 
     draw() {
-        this.drawWithImage(houseImg);
-    }
-}
-
-class FirefighterCorporation extends House {
-    constructor(block, side) {
-        super(block, side);
-        this.trucks = [];
-        this.emergenceList = [];
-    }
-
-    draw() {
-        this.drawWithImage(corporationImg);
+        if (this.burningLevel === House.BURNING_LEVEL_NONE)
+            this.drawWithImage(houseImg);
+        else if (this.burningLevel === House.BURNING_LEVEL_LOW)
+            this.drawWithImage(houseFireImg1);
+        else if (this.burningLevel === House.BURNING_LEVEL_MEDIUM)
+            this.drawWithImage(houseFireImg2);
+        else if (this.burningLevel === House.BURNING_LEVEL_HIGH)
+            this.drawWithImage(houseFireImg3);
     }
 }
