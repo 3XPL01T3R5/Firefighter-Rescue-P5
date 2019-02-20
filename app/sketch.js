@@ -62,7 +62,7 @@ function setup() {
 function draw() {
     background('rgba(150,214,150, 1)');
     push();
-    translate(20, 23);
+    translate(30, 23);
     city.draw();
     if (city.corporations[0].truck) {
         city.corporations[0].truck.draw();

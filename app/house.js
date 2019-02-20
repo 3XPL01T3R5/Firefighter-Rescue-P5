@@ -22,6 +22,7 @@ class House {
         } else {
             translate(this.block.x * blockSize, this.block.y * blockSize - blockSize);
         }
+        push();
         if (this.side === Block.SIDE_RIGHT) {
             rotate(HALF_PI);
         } else if (this.side === Block.SIDE_LEFT) {
@@ -30,6 +31,24 @@ class House {
             rotate(PI);
         }
         image(img, -halfBlockSize, -halfBlockSize, blockSize, blockSize);
+        pop();
+        if (this.residents) {
+            fill(255, 0, 0);
+            noStroke();
+            push();
+            if (this.side == Block.SIDE_RIGHT)
+                translate(blockSize, 0);
+            else if (this.side == Block.SIDE_BOTTOM)
+                translate(blockSize, blockSize);
+
+            ellipse(-halfBlockSize, -halfBlockSize, 20, 20);
+            fill(255);
+            if (this.residents >= 10)
+                text(this.residents, -halfBlockSize - 7, -halfBlockSize + 5);
+            else
+                text(this.residents, -halfBlockSize - 3, -halfBlockSize + 5);
+            pop();
+        }
         pop();
     }
 
@@ -43,11 +62,5 @@ class House {
         else if (this.burningLevel === House.BURNING_LEVEL_HIGH)
             this.drawWithImage(houseFireImg3);
 
-        push();
-        const offsetX = this.side === Block.SIDE_LEFT ? -blockSize : Block.SIDE_RIGHT ? blockSize : 0;
-        const offsetY = this.side === Block.SIDE_TOP ? -blockSize : Block.DIR_DOWN ? blockSize : 0;
-        translate(this.block.x * blockSize + offsetX, this.block.y * blockSize + offsetY);
-        text(this.residents, 0, 0);
-        pop();
     }
 }
