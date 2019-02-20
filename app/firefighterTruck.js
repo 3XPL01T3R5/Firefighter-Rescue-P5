@@ -19,6 +19,11 @@ class FirefighterTruck {
     }
 
     send() {
+        if (sirenSound.isPlaying())
+            sirenSound.stop();
+        sirenSound.play();
+        sirenSound.jump(floor(random(0,91)));
+        sirenSound.setVolume(1, 1);
         this.state = FirefighterTruck.TRUCK_ON_THE_WAY;
     }
 
@@ -45,8 +50,7 @@ class FirefighterTruck {
         push();
 
         if(this.currentDir === Block.DIR_RIGHT) {
-            translate(this.x * blockSize - quarterBlockSize, this.y * blockSize + eighthBlockSize);
-
+            translate(this.x * blockSize + quarterBlockSize, this.y * blockSize + eighthBlockSize);
             rotate(HALF_PI);
         } else if(this.currentDir === Block.DIR_LEFT) {
             translate(this.x * blockSize - quarterBlockSize, this.y * blockSize - eighthBlockSize);
@@ -82,6 +86,7 @@ class FirefighterTruck {
             } else if (this.state === FirefighterTruck.TRUCK_RETURNING) {
                 this.state = FirefighterTruck.TRUCK_AT_GARAGE;
                 setTimeout(callback, 1243);
+                sirenSound.setVolume(0, 0.5);
             }
 
             return;

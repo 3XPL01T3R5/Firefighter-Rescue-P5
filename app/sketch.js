@@ -1,19 +1,23 @@
 var city = undefined;
-var houseImg, corporationImg, truckImg, houseFireImg1, houseFireImg2, houseFireImg3, paths, callback;
+var houseImg, corporationImg, truckImg, houseFireImg1, houseFireImg2, houseFireImg3, sirenSound, paths, callback;
 
 function start() {
     for (let i = 0; i < 3; i++) {
         let houseIndex = floor(random(0, city.houses.length));
         let house = city.houses[houseIndex];
         house.burningLevel = floor(random(House.BURNING_LEVEL_LOW, House.BURNING_LEVEL_HIGH + 1));
-        // if (!city.housesOnFire.find(h => h.id === house.id))
-        city.housesOnFire.push(house);
+        if (!city.housesOnFire.find(h => h.block.id === house.block.id))
+            city.housesOnFire.push(house);
     }
 
     city.housesOnFire = sortByFitness(city.housesOnFire, paths);
     callback = city.callbackTruckGarage.bind(city);
 
     city.sendTrucks(city.housesOnFire.shift());
+}
+
+function preload() {
+    sirenSound = loadSound('assets/siren_fire.mp3');
 }
 
 function setup() {
