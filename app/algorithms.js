@@ -1,4 +1,4 @@
-function findDistances(graph, objectives, start) {
+function findPaths(graph, objectives, start) {
     let path = {};
     let neighbors = graph.adjList[start];
     let parent = Array(neighbors.length).fill(start);
@@ -20,5 +20,9 @@ function findDistances(graph, objectives, start) {
     }
 
     return path;
+}
+
+function fitness(house, distance) {
+
 }
 
