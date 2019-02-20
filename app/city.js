@@ -33,7 +33,7 @@ class City {
     buildCity() {
         this.setInitialBlock(initialX, initialY, Block.ORIENTATION_VERTICAL, Block.TYPE_STRAIGHT);
 
-        for (var i = 0; i < 19; i++) {
+        for (var i = 0; i < 18; i++) {
             this.buildBlock('down', Block.TYPE_STRAIGHT);
         }
         this.lastBlock.type = Block.TYPE_INTERSECTION;
