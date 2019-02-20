@@ -42,5 +42,12 @@ class House {
             this.drawWithImage(houseFireImg2);
         else if (this.burningLevel === House.BURNING_LEVEL_HIGH)
             this.drawWithImage(houseFireImg3);
+
+        push();
+        const offsetX = this.side === Block.SIDE_LEFT ? -blockSize : Block.SIDE_RIGHT ? blockSize : 0;
+        const offsetY = this.side === Block.SIDE_TOP ? -blockSize : Block.DIR_DOWN ? blockSize : 0;
+        translate(this.block.x * blockSize + offsetX, this.block.y * blockSize + offsetY);
+        text(this.residents, 0, 0);
+        pop();
     }
 }

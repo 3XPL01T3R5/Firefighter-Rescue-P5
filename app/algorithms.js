@@ -1,10 +1,11 @@
 function findPaths(graph, objectives, start) {
-    let path = {};
-    let neighbors = graph.adjList[start];
+    let allPaths = {};
+    let objectivesPath = {};
+    let neighbors = Object.assign([], graph.adjList[start]);
     let parent = Array(neighbors.length).fill(start);
     let visited = Array(graph.vertices.length).fill(false);
 
-    path[start] = [];
+    allPaths[start] = [];
     visited[start] = true;
 
     while (neighbors.length !== 0) {
@@ -15,32 +16,32 @@ function findPaths(graph, objectives, start) {
             visited[n[0]] = true;
             neighbors = neighbors.concat(graph.adjList[n[0]]);
             parent = parent.concat(Array(graph.adjList[n[0]].length).fill(n[0]));
-            path[n[0]] = path[p].concat([p, n[0]]);
+            allPaths[n[0]] = allPaths[p].concat([p, n[0]]);
+
+            const house = objectives.find(h => h.block.id === n[0]);
+            if (house) {
+                let path = allPaths[n[0]];
+                // Removing duplicate entries
+                for (let i = path.length - 2; i >= 1; i-=2) {
+                    path.splice(i, 1);
+                }
+
+                objectivesPath[n[0]] = path;
+            }
         }
     }
-    Object.keys(path).forEach(p => {
-        for (let i = path[p].length - 2; i >= 1; i-=2) {
-            path[p].splice(i, 1);
-        }
-    });
-    console.log(path);
-    return path;
+
+    let sortedHouses = sortByFitness(objectives, objectivesPath);
+    return {'sortedHouses': sortedHouses, 'paths': objectivesPath};
 }
 
 function fitness(house, distance) {
-    return (house.residents / 100) + (house.burningLevel / 10) + 10 / distance;
+    return house.residents / 5 + house.burningLevel / 10 + 10 / distance;
 }
 
 function sortByFitness(houses, distances) {
     houses = houses.sort((h1, h2) => {
-        let f1 = fitness(h1, distances[h1.block.id]);
-        let f2 = fitness(h2, distances[h2.block.id]);
-
-        if (f1 < f2)
-            return 1;
-        if (f1 > f2)
-            return -1;
-        return 0
+       return fitness(h2, distances[h2.block.id]) - fitness(h1, distances[h1.block.id]);
     });
 
     return houses;

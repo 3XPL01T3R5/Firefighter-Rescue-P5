@@ -4,7 +4,6 @@ class City {
         this.houses = [];
         this.housesOnFire = [];
         this.corporations = [];
-        this.truck = undefined;
         this.lastBlock = null;
     }
 
@@ -172,8 +171,8 @@ class City {
         this.buildIntersectionWith(157, 'down');
 
 
-        console.log(this.lastBlock);
-        console.log(this.graph);
+        // console.log(this.lastBlock);
+        // console.log(this.graph);
     }
 
     buildHouses() {
@@ -191,18 +190,6 @@ class City {
 
     buildCorporations() {
         this.corporations.push(new FirefighterCorporation(this.graph.getVertexById(166), Block.SIDE_LEFT));
-    }
-
-    sendTrucks(house) {
-        city.truck = new FirefighterTruck(paths[house.block.id], city.graph);
-        this.truck.target = house;
-        this.truck.send();
-    }
-
-    callbackTruckGarage() {
-        if (this.housesOnFire.length === 0)
-            return;
-        this.sendTrucks(this.housesOnFire.shift());
     }
 
     draw() {
