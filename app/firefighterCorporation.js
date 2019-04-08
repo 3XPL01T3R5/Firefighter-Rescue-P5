@@ -12,6 +12,7 @@ class FirefighterCorporation extends House {
         this.paths = {};
         this.privateQueue = [];
         this.queue = [];
+        this.otherCorporations = [];
         this.algorithm = algorithm;
         this.status = FirefighterCorporation.STATUS_RECEIVING_CALLS;
     }
@@ -23,6 +24,7 @@ class FirefighterCorporation extends House {
     sendTrucks() {
         const house = this.getNextHouse();
         if (house) {
+            this.broadcastRescue(house);
             this.truck = new FirefighterTruck(this.paths[house.block.id], city.graph);
             this.truck.target = house;
             this.truck.send();
@@ -67,8 +69,8 @@ class FirefighterCorporation extends House {
         return undefined;
     }
 
-    shareInfo(corporations) {
-        for (const corp of corporations) {
+    shareInfo() {
+        for (const corp of this.otherCorporations) {
             this.emitLog('Houses on fire: ' + this.queueToString(this.privateQueue),corp.id);
             corp.receiveInfo(this.privateQueue);
         }
@@ -77,13 +79,14 @@ class FirefighterCorporation extends House {
     receiveInfo(info) {
         for (const e of info) {
             const ret = this.findPath(e.house);
+            this.paths[e.house.block.id] = ret['path'];
             this.queue.push({'house': e.house, 'score': ret.score, 'corpId': this.id});
         }
     }
 
-    shareScores(corporations) {
-        for (const corp of corporations) {
-            this.emitLog('My scores: ' + this.queueScoresToString(this.privateQueue),corp.id);
+    shareScores() {
+        for (const corp of this.otherCorporations) {
+            this.emitLog('My scores: ' + this.scoresToString(this.privateQueue),corp.id);
             corp.receiveScores(this.privateQueue);
         }
     }
@@ -93,11 +96,15 @@ class FirefighterCorporation extends House {
     }
 
     emitLog(message, dest) {
+        let str = '';
         if (dest) {
-            console.log('[' + this.id + '] -> [' + dest + '] ' + message);
+            str = '[' + this.id + '] -> [' + dest + '] ' + message;
         } else {
-            console.log('[' + this.id + '] ' + message);
+            str = '[' + this.id + '] ' + message;
         }
+
+        console.log(str);
+        log += str + '\n';
     }
 
     queueToString(queue) {
@@ -110,7 +117,7 @@ class FirefighterCorporation extends House {
         return str;
     }
 
-    queueScoresToString(queue) {
+    scoresToString(queue) {
         let str = '[', first = true;
         for (const info of queue) {
             str += (first ? '' : ', ') + '(h: ' + info.house.block.id + '; score: ' + info.score + ')';
@@ -136,23 +143,25 @@ class FirefighterCorporation extends House {
                 return -1;
             return 1;
         });
-
-        const finalQueue = [];
-        for (const info of this.queue) {
-            if (!this.isOnQueue(info.house, finalQueue)) {
-                finalQueue.push(info);
-            }
-        }
-
-        this.queue = finalQueue;
     }
 
-    isOnQueue(house, queue) {
-        for (let i = 0; i < queue.length; i++) {
-            if (queue[i].house.block.id === house.block.id) {
-                return true;
+    broadcastRescue(house) {
+        for (const corp of this.otherCorporations) {
+            this.emitLog('Rescuing house ' + house.block.id, corp.id);
+            corp.receiveRescueBroadcast(house);
+        }
+    }
+
+    receiveRescueBroadcast(house) {
+        const idxList = [];
+        for (let i = 0; i < this.queue.length; i++) {
+            if (this.queue[i].house.block.id === house.block.id) {
+                idxList.push(i);
             }
         }
-        return false;
+
+        for (let i = 0; i < idxList.length; i++) {
+            this.queue.splice(idxList[i] - i, 1);
+        }
     }
 }

@@ -1,8 +1,9 @@
 var city = undefined;
 var houseImg, corporationImg, truckImg, houseFireImg1, houseFireImg2, houseFireImg3, sirenSound, callback = {},
-    btnStart;
+    btnStart, log;
 
 function start() {
+    log = '';
     console.clear();
     btnStart.disabled = true;
     btnStart.style.opacity = 0.5;
@@ -12,6 +13,7 @@ function start() {
     });
 
     // Setting houses on fire
+    emitLog('CALLING AGENTS STAGE');
     const housesOnFire = [];
     for (let i = 0; i < 5; i++) {
         let houseIndex = floor(random(0, city.houses.length));
@@ -24,17 +26,23 @@ function start() {
     }
 
     city.corporations.forEach(corp => {
+        corp.otherCorporations = city.corporations.filter(c => c.id !== corp.id);
+    });
+
+    emitLog('SHARING INFORMATION STAGE');
+    city.corporations.forEach(corp => {
         corp.status = FirefighterCorporation.STATUS_EXCHANGING_INFORMATION;
-        corp.shareInfo(city.corporations.filter(c => c.id !== corp.id));
+        corp.shareInfo();
     });
 
     city.corporations.forEach(corp => {
         corp.fillPrivateQueue();
     });
 
+    emitLog('SHARING SCORES STAGE');
     city.corporations.forEach(corp => {
         corp.status = FirefighterCorporation.STATUS_SHARING_SCORES;
-        corp.shareScores(city.corporations.filter(c => c.id !== corp.id));
+        corp.shareScores();
     });
 
     city.corporations.forEach(corp => {
@@ -45,6 +53,7 @@ function start() {
     //     console.log(c);
     // }
 
+    emitLog('RESCUE STAGE');
     city.corporations.forEach(corp => {
         corp.status = FirefighterCorporation.STATUS_ON_RESCUE;
         callback[corp.id] = corp.callbackTruckGarage.bind(corp);
@@ -60,6 +69,9 @@ function enableBtnStart() {
     }
     btnStart.disabled = false;
     btnStart.style.opacity = 1;
+
+    const blob = new Blob([log], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, "log.txt");
 }
 
 function preload() {
@@ -100,4 +112,11 @@ function draw() {
         }
     });
     pop();
+}
+
+function emitLog(message) {
+    const str = '----------' + message + '----------';
+
+    console.log(str);
+    log += str + '\n';
 }
