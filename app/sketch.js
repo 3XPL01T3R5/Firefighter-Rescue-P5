@@ -1,36 +1,30 @@
 var city = undefined;
-var houseImg, corporationImg, truckImg, houseFireImg1, houseFireImg2, houseFireImg3, sirenSound, callback, btnStart;
+var houseImg, corporationImg, truckImg, houseFireImg1, houseFireImg2, houseFireImg3, sirenSound, callback = {}, btnStart;
 
 function start() {
+    btnStart.disabled = true;
+    btnStart.style.opacity = 0.5;
+
     city.houses.forEach(h => {
         h.residents = floor(random(1, 10));
     });
 
     // Setting houses on fire
-    for (let i = 0; i < 3; i++) {
+    const housesOnFire = [];
+    for (let i = 0; i < 5; i++) {
         let houseIndex = floor(random(0, city.houses.length));
         let house = city.houses[houseIndex];
         house.burningLevel = floor(random(House.BURNING_LEVEL_LOW, House.BURNING_LEVEL_HIGH + 1));
-        if (!city.housesOnFire.find(h => h.block.id === house.block.id)) {
-            city.housesOnFire.push(house);
+        if (!housesOnFire.find(h => h.block.id === house.block.id)) {
+            housesOnFire.push(house);
             city.getRandomCorporation().call(house);
         }
     }
 
     city.corporations.forEach(corp => {
-        const ret = findPaths(city.graph, city.housesOnFire, corp.block.id);
-        corp.housesOnFire = ret['sortedHouses'];
-        corp.paths = ret['paths'];
+        callback[corp.id] = corp.callbackTruckGarage.bind(corp);
+        corp.sendTrucks();
     });
-
-    callback = city.corporations[0].callbackTruckGarage.bind(city.corporations[0]);
-
-    city.corporations.forEach(corp => {
-        corp.sendTrucks(corp.housesOnFire.shift());
-    });
-
-    btnStart.disabled = true;
-    btnStart.style.opacity = 0.5;
 }
 
 function preload() {
@@ -57,12 +51,6 @@ function setup() {
     city.buildCity();
     city.buildHouses();
     city.buildCorporations();
-
-    // paths = findPaths(city.graph, city.houses, city.corporations[0].block.id);
-
-    // Object.keys(paths).forEach(key => {
-    //    housesOnFire.push(city.graph.getVertexById(id))
-    // });
 }
 
 function draw() {
@@ -70,10 +58,10 @@ function draw() {
     push();
     translate(30, 23);
     city.draw();
-    city.corporations.forEach( coooop => {
-        if (coooop.truck) {
-            coooop.truck.draw();
-            coooop.truck.updatePosition();
+    city.corporations.forEach( corp => {
+        if (corp.truck) {
+            corp.truck.draw();
+            corp.truck.updatePosition();
         }
     });
     pop();

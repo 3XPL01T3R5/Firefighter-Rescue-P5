@@ -6,6 +6,7 @@ class FirefighterTruck {
     static TRUCK_RETURNING = 0;
 
     constructor(path, graph) {
+        this.corpId = path[0];
         this.graph = graph;
         this.available = true;
         this.block = this.graph.getVertexById(path[0]);
@@ -85,7 +86,7 @@ class FirefighterTruck {
                 setTimeout(this.goBack.bind(this), 4500);
             } else if (this.state === FirefighterTruck.TRUCK_RETURNING) {
                 this.state = FirefighterTruck.TRUCK_AT_GARAGE;
-                setTimeout(callback, 1243);
+                setTimeout(callback[this.corpId], 1243);
                 sirenSound.setVolume(0, 0.5);
             }
 

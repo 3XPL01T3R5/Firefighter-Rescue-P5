@@ -2,7 +2,6 @@ class City {
     constructor() {
         this.graph = new Graph();
         this.houses = [];
-        this.housesOnFire = [];
         this.corporations = [];
         this.lastBlock = null;
     }

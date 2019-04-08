@@ -1,6 +1,6 @@
-function findPaths(graph, objectives, start) {
+function aStar(graph, objective, start) {
     let allPaths = {};
-    let objectivesPath = {};
+    let objectivePath;
     let neighbors = Object.assign([], graph.adjList[start]);
     let parent = Array(neighbors.length).fill(start);
     let visited = Array(graph.vertices.length).fill(false);
@@ -18,7 +18,7 @@ function findPaths(graph, objectives, start) {
             parent = parent.concat(Array(graph.adjList[n[0]].length).fill(n[0]));
             allPaths[n[0]] = allPaths[p].concat([p, n[0]]);
 
-            const house = objectives.find(h => h.block.id === n[0]);
+            const house = objective.block.id === n[0];
             if (house) {
                 let path = allPaths[n[0]];
                 // Removing duplicate entries
@@ -26,28 +26,16 @@ function findPaths(graph, objectives, start) {
                     path.splice(i, 1);
                 }
 
-                objectivesPath[n[0]] = path;
+                objectivePath = path;
+                break;
             }
         }
     }
 
-    let sortedHouses = sortByFitness(objectives, objectivesPath);
-    return {'sortedHouses': sortedHouses, 'paths': objectivesPath};
+    return {'path': objectivePath, 'score': fitness(objective, objectivePath.length)};
 }
 
 function fitness(house, distance) {
     return (house.residents / 5) + (house.burningLevel / 5) + (5 / distance);
-}
-
-function sortByFitness(houses, distances) {
-    houses = houses.sort((h1, h2) => {
-       return fitness(h2, distances[h2.block.id].length) - fitness(h1, distances[h1.block.id].length);
-    });
-
-    houses.forEach(h => {
-        console.log(fitness(h, distances[h.block.id].length));
-    });
-
-    return houses;
 }
 

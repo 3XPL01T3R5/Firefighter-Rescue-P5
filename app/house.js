@@ -5,6 +5,7 @@ class House {
     static BURNING_LEVEL_HIGH = 3;
 
     constructor(block, side, residents) {
+        this.id = block.id;
         this.block = block;
         this.side = side;
         this.burningLevel = House.BURNING_LEVEL_NONE;
