@@ -24,6 +24,28 @@ function start() {
     }
 
     city.corporations.forEach(corp => {
+        corp.status = FirefighterCorporation.STATUS_EXCHANGING_INFORMATION;
+        corp.shareInfo(city.corporations.filter(c => c.id !== corp.id));
+    });
+
+    city.corporations.forEach(corp => {
+        corp.fillPrivateQueue();
+    });
+
+    city.corporations.forEach(corp => {
+        corp.status = FirefighterCorporation.STATUS_SHARING_SCORES;
+        corp.shareScores(city.corporations.filter(c => c.id !== corp.id));
+    });
+
+    city.corporations.forEach(corp => {
+        corp.fillAndSortQueue();
+    });
+
+    // for (const c of city.corporations) {
+    //     console.log(c);
+    // }
+
+    city.corporations.forEach(corp => {
         corp.status = FirefighterCorporation.STATUS_ON_RESCUE;
         callback[corp.id] = corp.callbackTruckGarage.bind(corp);
         corp.sendTrucks();
