@@ -24,20 +24,20 @@ class FirefighterCorporation extends House {
             this.truck = new FirefighterTruck(this.paths[house.block.id], city.graph);
             this.truck.target = house;
             this.truck.send();
+        } else {
+            this.queue.length = 0;
+            this.status = FirefighterCorporation.STATUS_RECEIVING_CALLS;
+            this.emitLog('Now accepting calls');
+            enableBtnStart();
         }
     }
 
     callbackTruckGarage() {
-        if (this.queue.length === 0){
-            btnStart.disabled = false;
-            btnStart.style.opacity = 1;
-            return;
-        }
         this.sendTrucks();
     }
 
     call(house) {
-        console.log('[' + this.id + '] Receiving call from house ' + house.block.id);
+        this.emitLog('Receiving call from house ' + house.block.id);
 
         const ret = this.findPath(house);
         this.paths[house.block.id] = ret['path'];
@@ -63,5 +63,13 @@ class FirefighterCorporation extends House {
             }
         }
         return undefined;
+    }
+
+    emitLog(message, dest) {
+        if (dest) {
+            console.log('[' + this.id + '] -> [' + dest + '] ' + message);
+        } else {
+            console.log('[' + this.id + '] ' + message);
+        }
     }
 }

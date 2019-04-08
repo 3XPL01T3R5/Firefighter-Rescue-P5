@@ -1,7 +1,9 @@
 var city = undefined;
-var houseImg, corporationImg, truckImg, houseFireImg1, houseFireImg2, houseFireImg3, sirenSound, callback = {}, btnStart;
+var houseImg, corporationImg, truckImg, houseFireImg1, houseFireImg2, houseFireImg3, sirenSound, callback = {},
+    btnStart;
 
 function start() {
+    console.clear();
     btnStart.disabled = true;
     btnStart.style.opacity = 0.5;
 
@@ -22,9 +24,20 @@ function start() {
     }
 
     city.corporations.forEach(corp => {
+        corp.status = FirefighterCorporation.STATUS_ON_RESCUE;
         callback[corp.id] = corp.callbackTruckGarage.bind(corp);
         corp.sendTrucks();
     });
+}
+
+function enableBtnStart() {
+    for (let corp of city.corporations) {
+        if (corp.status !== FirefighterCorporation.STATUS_RECEIVING_CALLS) {
+            return;
+        }
+    }
+    btnStart.disabled = false;
+    btnStart.style.opacity = 1;
 }
 
 function preload() {
@@ -58,7 +71,7 @@ function draw() {
     push();
     translate(30, 23);
     city.draw();
-    city.corporations.forEach( corp => {
+    city.corporations.forEach(corp => {
         if (corp.truck) {
             corp.truck.draw();
             corp.truck.updatePosition();

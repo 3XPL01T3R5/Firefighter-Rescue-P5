@@ -189,7 +189,7 @@ class City {
 
     buildCorporations() {
         this.corporations.push(new FirefighterCorporation(this.graph.getVertexById(128), Block.SIDE_LEFT, FirefighterCorporation.ALGORITHM_A_STAR));
-        this.corporations.push(new FirefighterCorporation(this.graph.getVertexById(190), Block.SIDE_LEFT, FirefighterCorporation.ALGORITHM_IDA_STAR));
+        this.corporations.push(new FirefighterCorporation(this.graph.getVertexById(190), Block.SIDE_RIGHT, FirefighterCorporation.ALGORITHM_IDA_STAR));
     }
 
     getRandomCorporation() {
