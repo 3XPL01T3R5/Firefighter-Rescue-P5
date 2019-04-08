@@ -11,8 +11,10 @@ function start() {
         let houseIndex = floor(random(0, city.houses.length));
         let house = city.houses[houseIndex];
         house.burningLevel = floor(random(House.BURNING_LEVEL_LOW, House.BURNING_LEVEL_HIGH + 1));
-        if (!city.housesOnFire.find(h => h.block.id === house.block.id))
+        if (!city.housesOnFire.find(h => h.block.id === house.block.id)) {
             city.housesOnFire.push(house);
+            city.getRandomCorporation().call(house);
+        }
     }
 
     city.corporations.forEach(corp => {
@@ -68,9 +70,11 @@ function draw() {
     push();
     translate(30, 23);
     city.draw();
-    if (city.corporations[0].truck) {
-        city.corporations[0].truck.draw();
-        city.corporations[0].truck.updatePosition();
-    }
+    city.corporations.forEach( coooop => {
+        if (coooop.truck) {
+            coooop.truck.draw();
+            coooop.truck.updatePosition();
+        }
+    });
     pop();
 }

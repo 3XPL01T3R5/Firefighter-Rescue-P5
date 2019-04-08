@@ -1,9 +1,18 @@
 class FirefighterCorporation extends House {
-    constructor(block, side) {
+    static ALGORITHM_A_STAR = 0;
+    static ALGORITHM_IDA_STAR = 1;
+    static STATUS_RECEIVING_CALLS = 0;
+    static STATUS_EXCHANGING_INFORMATION = 1;
+    static STATUS_ON_RESCUE = 2;
+
+    constructor(block, side, algorithm) {
         super(block, side);
         this.truck = null;
         this.housesOnFire = [];
         this.paths = [];
+        this.queue = [];
+        this.algorithm = algorithm;
+        this.status = FirefighterCorporation.STATUS_RECEIVING_CALLS;
     }
 
     draw() {
@@ -23,5 +32,21 @@ class FirefighterCorporation extends House {
             return;
         }
         this.sendTrucks(this.housesOnFire.shift());
+    }
+
+    call(house) {
+        this.queue.push({
+            house, 'score': this.fitness(house), 'id': this.block.id
+        });
+    }
+
+    fitness(house) {
+        if (this.algorithm === FirefighterCorporation.ALGORITHM_IDA_STAR) {
+            // TODO calc of fitness
+        } else if (this.algorithm === FirefighterCorporation.ALGORITHM_IDA_STAR) {
+            // TODO calc of fitness
+        }
+
+        return -1;
     }
 }

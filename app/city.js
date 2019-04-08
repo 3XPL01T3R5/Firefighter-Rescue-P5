@@ -189,7 +189,13 @@ class City {
     }
 
     buildCorporations() {
-        this.corporations.push(new FirefighterCorporation(this.graph.getVertexById(166), Block.SIDE_LEFT));
+        this.corporations.push(new FirefighterCorporation(this.graph.getVertexById(128), Block.SIDE_LEFT, FirefighterCorporation.ALGORITHM_A_STAR));
+        this.corporations.push(new FirefighterCorporation(this.graph.getVertexById(190), Block.SIDE_LEFT, FirefighterCorporation.ALGORITHM_IDA_STAR));
+    }
+
+    getRandomCorporation() {
+        const index = Math.floor(Math.random() * this.corporations.length);
+        return this.corporations[index];
     }
 
     draw() {
