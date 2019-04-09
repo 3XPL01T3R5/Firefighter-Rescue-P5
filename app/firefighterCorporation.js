@@ -1,6 +1,7 @@
 class FirefighterCorporation extends House {
     static ALGORITHM_A_STAR = 0;
     static ALGORITHM_IDA_STAR = 1;
+    static ALGORITHM_DIJKSTRA = 2;
     static STATUS_RECEIVING_CALLS = 0;
     static STATUS_EXCHANGING_INFORMATION = 1;
     static STATUS_SHARING_SCORES = 2;
@@ -31,7 +32,7 @@ class FirefighterCorporation extends House {
         } else {
             this.queue.length = 0;
             this.status = FirefighterCorporation.STATUS_RECEIVING_CALLS;
-            this.emitLog('Now accepting calls');
+            this.emitLog('A Aceitar chamadas');
             enableBtnStart();
         }
     }
@@ -41,7 +42,7 @@ class FirefighterCorporation extends House {
     }
 
     call(house) {
-        this.emitLog('Receiving call from house ' + house.block.id);
+        this.emitLog('Recebendo chamada da casa ' + house.block.id);
 
         const ret = this.findPath(house);
         this.paths[house.block.id] = ret['path'];
@@ -54,7 +55,9 @@ class FirefighterCorporation extends House {
         if (this.algorithm === FirefighterCorporation.ALGORITHM_A_STAR) {
             return aStar(city.graph, house, this.id);
         } else if (this.algorithm === FirefighterCorporation.ALGORITHM_IDA_STAR) {
-            return aStar(city.graph, house, this.id);
+            return idaStar(city.graph, house, this.id);
+        } else if (this.algorithm === FirefighterCorporation.ALGORITHM_DIJKSTRA) {
+            return dijkstra(city.graph, house, this.id);
         }
 
         return -1;
@@ -71,7 +74,7 @@ class FirefighterCorporation extends House {
 
     shareInfo() {
         for (const corp of this.otherCorporations) {
-            this.emitLog('Houses on fire: ' + this.queueToString(this.privateQueue),corp.id);
+            this.emitLog('Casas em chama: ' + this.queueToString(this.privateQueue),corp.id);
             corp.receiveInfo(this.privateQueue);
         }
     }
@@ -86,7 +89,7 @@ class FirefighterCorporation extends House {
 
     shareScores() {
         for (const corp of this.otherCorporations) {
-            this.emitLog('My scores: ' + this.scoresToString(this.privateQueue),corp.id);
+            this.emitLog('Meus pontos: ' + this.scoresToString(this.privateQueue),corp.id);
             corp.receiveScores(this.privateQueue);
         }
     }
@@ -104,7 +107,7 @@ class FirefighterCorporation extends House {
         }
 
         console.log(str);
-        log += str + '\n';
+        log += str + '\r\n';
     }
 
     queueToString(queue) {
@@ -120,7 +123,7 @@ class FirefighterCorporation extends House {
     scoresToString(queue) {
         let str = '[', first = true;
         for (const info of queue) {
-            str += (first ? '' : ', ') + '(h: ' + info.house.block.id + '; score: ' + info.score + ')';
+            str += (first ? '' : ', ') + '(c: ' + info.house.block.id + '; pontos: ' + info.score + ')';
             first = false;
         }
         str += ']';
@@ -147,7 +150,7 @@ class FirefighterCorporation extends House {
 
     broadcastRescue(house) {
         for (const corp of this.otherCorporations) {
-            this.emitLog('Rescuing house ' + house.block.id, corp.id);
+            this.emitLog('Atendendo casa ' + house.block.id, corp.id);
             corp.receiveRescueBroadcast(house);
         }
     }

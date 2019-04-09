@@ -13,7 +13,7 @@ function start() {
     });
 
     // Setting houses on fire
-    emitLog('CALLING AGENTS STAGE');
+    emitLog('ETAPA DE CHAMADA DOS AGENTES');
     const housesOnFire = [];
     for (let i = 0; i < 5; i++) {
         let houseIndex = floor(random(0, city.houses.length));
@@ -29,7 +29,7 @@ function start() {
         corp.otherCorporations = city.corporations.filter(c => c.id !== corp.id);
     });
 
-    emitLog('SHARING INFORMATION STAGE');
+    emitLog('ETAPA DE COMPARTILHAMENTO DE INFORMAÇÃO');
     city.corporations.forEach(corp => {
         corp.status = FirefighterCorporation.STATUS_EXCHANGING_INFORMATION;
         corp.shareInfo();
@@ -39,7 +39,7 @@ function start() {
         corp.fillPrivateQueue();
     });
 
-    emitLog('SHARING SCORES STAGE');
+    emitLog('ETAPA DE COMPARTILHAMENTO DE PONTUAÇÃO');
     city.corporations.forEach(corp => {
         corp.status = FirefighterCorporation.STATUS_SHARING_SCORES;
         corp.shareScores();
@@ -53,7 +53,7 @@ function start() {
     //     console.log(c);
     // }
 
-    emitLog('RESCUE STAGE');
+    emitLog('AO RESGATE!');
     city.corporations.forEach(corp => {
         corp.status = FirefighterCorporation.STATUS_ON_RESCUE;
         callback[corp.id] = corp.callbackTruckGarage.bind(corp);
@@ -115,8 +115,9 @@ function draw() {
 }
 
 function emitLog(message) {
-    const str = '----------' + message + '----------';
+    confirm('Prosseguir para próxima etapa?');
+    const str = '---------- ' + message + ' ----------';
 
     console.log(str);
-    log += str + '\n';
+    log += str + '\r\n';
 }
